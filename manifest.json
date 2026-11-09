@@ -2,16 +2,15 @@
   "name": "Dola",
   "short_name": "Dola",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#050003",
-  "theme_color": "#050003",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "./IMG_20261109_142135.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
