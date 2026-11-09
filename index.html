@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050003">
+<title>AUXILIO DE MIRA</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  background: #030102;
+  color: #d87982;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* พื้นหลัง */
+#particles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  background: #030102;
+}
+
+.spark {
+  position: absolute;
+  height: 2px;
+  width: 22px;
+  background: linear-gradient(90deg, transparent, #a83242);
+  box-shadow: 0 0 7px #8c2635;
+  animation: move 4s linear infinite;
+}
+
+@keyframes move {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  30% { opacity: 1; }
+  to {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+/* กล่องหลัก */
+.panel {
+  width: 490px;
+  max-width: 92vw;
+  padding: 19px;
+  border: 2px solid #50202a;
+  border-radius: 22px;
+  background: rgba(5, 1, 4, .96);
+  box-shadow: 0 0 12px rgba(130, 25, 45, .12);
+}
+
+/* หัวข้อ */
+.header {
+  text-align: center;
+  color: #c94c5b;
+  font-size: 23px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+  text-shadow: 0 0 8px #8f2736;
+}
+
+/* เนื้อหาสองฝั่ง */
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.left, .right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ตัวเลือก */
+.check-option {
+  height: 56px;
+  border: 2px solid #49202a;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: .3px;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 21px;
+  height: 21px;
+  min-width: 21px;
+  border: 2px solid #8c4550;
+  border-radius: 5px;
+  background: #080407;
+  cursor: pointer;
+  outline: none;
+}
+
+input[type="checkbox"]:checked {
+  background: #a72c3e;
+  border-color: #dc6573;
+}
+
+input[type="checkbox"]:checked::after {
+  content: "✓";
+  display: block;
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+/* FOV */
+.fov-box {
+  height: 57px;
+}
+
+.fov-title {
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+
+.fov-line {
+  display: flex;
+  align-items: center;
+}
+
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: #492027;
+  border-radius: 10px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ff4054;
+  box-shadow: 0 0 10px #f22c43;
+  cursor: pointer;
+}
+
+/* Dropdown */
+select {
+  width: 100%;
+  height: 56px;
+  padding: 0 10px;
+  color: #d58b92;
+  background: #080407;
+  border: 2px solid #49202a;
+  border-radius: 11px;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 13px;
+  outline: none;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: -6px;
+}
+
+/* ปุ่มเลือกเกม */
+.game-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.game-buttons button {
+  flex: 1;
+  height: 57px;
+  color: #d78b94;
+  background: #080407;
+  border: 2px solid #672d38;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.game-buttons button.selected {
+  background: #59202b;
+  border-color: #dc6573;
+  color: #ffffff;
+}
+
+/* ปุ่มล่าง */
+.inject {
+  width: 100%;
+  height: 55px;
+  margin-top: 15px;
+  background: #090307;
+  color: #c95865;
+  border: 2px solid #873442;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+  box-shadow: inset 0 0 10px rgba(150, 30, 50, .1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  outline: none;
+}
+
+/* แจ้งเตือน */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translate(-50%, 20px);
+  background: #19070c;
+  border: 1px solid #873442;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 12px;
+  opacity: 0;
+  transition: .25s;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* มือถือ */
+@media(max-width: 500px) {
+  .panel {
+    width: 94vw;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .header {
+    font-size: 19px;
+  }
+
+  .check-option {
+    font-size: 11px;
+    height: 49px;
+    padding: 5px;
+    gap: 5px;
+  }
+
+  select {
+    height: 49px;
+    font-size: 11px;
+  }
+
+  .game-buttons button {
+    font-size: 10px;
+    height: 49px;
+  }
+
+  .inject {
+    height: 49px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="particles"></div>
+
+<div class="panel">
+
+  <div class="header">
+    AUXILIO DE MIRA
+  </div>
+
+  <div class="content">
+
+    <!-- ฝั่งซ้าย -->
+    <div class="left">
+
+      <label class="check-option">
+        <input type="checkbox">
+        Ativar auxílio
+      </label>
+
+      <label class="check-option">
+        <input type="checkbox">
+        Aimbot
+      </label>
+
+      <label class="check-option">
+        <input type="checkbox">
+        Norecoil
+      </label>
+
+    </div>
+
+    <!-- ฝั่งขวา -->
+    <div class="right">
+
+      <div class="fov-box">
+
+        <div class="fov-title">
+          <span>FOV:</span>
+          <span id="fovNumber">0</span>
+        </div>
+
+        <div class="fov-line">
+          <input
+            type="range"
+            min="0"
+            max="10"
+            value="0"
+            id="fov"
+          >
+        </div>
+
+      </div>
+
+      <select id="target">
+        <option>Cabeça</option>
+        <option>Pescoço</option>
+        <option>Peito</option>
+      </select>
+
+      <div class="label">Jogo</div>
+
+      <div class="game-buttons">
+        <button id="btnFF" onclick="selectGame('com.dts.freefireth', 'Free Fire', this)">
+          Free Fire
+        </button>
+
+        <button id="btnFFMax" onclick="selectGame('com.dts.freefiremax', 'Free Fire MAX', this)">
+          Free Fire<br>MAX
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <button class="inject" id="inject" onclick="launchSelectedGame()">
+    INJETAR FUNÇÕES NO JOGO
+  </button>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// พื้นหลังแสงสีแดง
+const particles = document.getElementById("particles");
+
+for(let i = 0; i < 55; i++) {
+  const spark = document.createElement("div");
+
+  spark.className = "spark";
+  spark.style.top = Math.random() * 100 + "%";
+  spark.style.left = Math.random() * 100 + "%";
+  spark.style.animationDelay = Math.random() * 4 + "s";
+  spark.style.animationDuration = (2 + Math.random() * 4) + "s";
+
+  particles.appendChild(spark);
+}
+
+// FOV
+const fov = document.getElementById("fov");
+
+fov.addEventListener("input", function() {
+  document.getElementById("fovNumber").textContent = this.value;
+});
+
+// แจ้งเตือน
+function showMessage(message) {
+  const toast = document.getElementById("toast");
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
+
+// ระบบเลือกเกมและเริ่มเกม
+let selectedPackage = "";
+let selectedGameName = "";
+
+function selectGame(packageName, gameName, buttonElement) {
+  selectedPackage = packageName;
+  selectedGameName = gameName;
+
+  // เปลี่ยนสีปุ่มที่ถูกเลือก
+  document.getElementById("btnFF").classList.remove("selected");
+  document.getElementById("btnFFMax").classList.remove("selected");
+  buttonElement.classList.add("selected");
+
+  showMessage(gameName + " selecionado");
+}
+
+function launchSelectedGame() {
+  if (!selectedPackage) {
+    showMessage("Por favor, selecione um jogo!");
+    return;
+  }
+
+  showMessage("Iniciando " + selectedGameName + "...");
+
+  // เปิดแอปบน Android
+  let schemeName = (selectedPackage === "com.dts.freefiremax") ? "freefiremax" : "freefire";
+  
+  setTimeout(() => {
+    window.location.href = "intent://#Intent;scheme=" + schemeName + ";package=" + selectedPackage + ";end";
+  }, 500);
+}
+</script>
+
+</body>
+        </html>
